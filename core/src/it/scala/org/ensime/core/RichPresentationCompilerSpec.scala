@@ -12,7 +12,7 @@ import org.ensime.util.file._
 import scala.collection.immutable.Queue
 import scala.concurrent.Await
 import scala.concurrent.duration._
-import scala.reflect.internal.util.{ BatchSourceFile, OffsetPosition }
+import scala.reflect.internal.util.{ BatchSourceFile, OffsetPosition, RangePosition }
 import scala.tools.nsc.Settings
 import scala.tools.nsc.reporters.ConsoleReporter
 import scala.util.Properties
@@ -491,6 +491,43 @@ class RichPresentationCompilerSpec extends WordSpec with Matchers
         "5.1", "5.2", "5.3", "5.4", "5.5"
       ).
         foreach(test(_, cc))
+    }
+
+    "get symbol info after getting implicit information" in withPresCompiler { (config, cc) =>
+      val source = contents(
+        "package foo",
+        "import scala.concurrent.duration._",
+        "import scala.language.postfixOps",
+        "object Example {",
+        "  2 seconds",
+        "}\n"
+      )
+
+      val fileOnDisk = srcFile(config, "foo/Example.scala", source)
+      cc.askReloadFile(fileOnDisk)
+      cc.askLoadedTyped(fileOnDisk)
+
+      // 'hover over seconds'
+      val secondsSymbolPosition = new OffsetPosition(fileOnDisk, source.indexOf("onds"))
+      val symbolInfo1 = cc.askSymbolInfoAt(secondsSymbolPosition).get
+      assert(symbolInfo1.name == "seconds")
+
+      // 'mark implicts'
+      val filename = config.subprojects.head.sourceRoots.head / "foo" / "Example.scala"
+      val sourceFile = cc.createSourceFile(
+        SourceFileInfo(filename, Some(source))
+      )
+      cc.askReloadFile(sourceFile)
+      cc.askNotifyWhenReady()
+      cc.askLoadedTyped(sourceFile)
+
+      val range = new RangePosition(fileOnDisk, 0, 0, source.length - 1)
+      println(s"Asking implicit info ${range}")
+      val info = cc.askImplicitInfoInRegion(range)
+
+      // 'hover over seconds'
+      val sym2 = cc.askSymbolInfoAt(secondsSymbolPosition)
+      assert(sym2.get.name == "seconds")
     }
   }
 }

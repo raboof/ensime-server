@@ -247,8 +247,12 @@ trait RichCompilerControl extends CompilerControl with RefactoringControl with C
       )
   }
 
-  def askLinkPos(sym: Symbol, path: AbstractFile): Option[Position] =
-    askOption(linkPos(sym, createSourceFile(path)))
+  def askLinkPos(sym: Symbol, path: AbstractFile): Option[Position] = {
+    val fp = createSourceFile(path)
+    val lp = linkPos(sym, fp)
+    // This seems to be the side effect:
+    askOption(lp)
+  }
 }
 
 class RichPresentationCompiler(
@@ -591,4 +595,3 @@ class RichPresentationCompiler(
     wrap[Position](r => new AskLinkPosItem(sym, source, r).apply(), t => throw t)
 
 }
-

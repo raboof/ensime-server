@@ -246,6 +246,11 @@ object EnsimeBuild extends Build with JdkResolver {
     libraryDependencies += "org.scalatest" %% "scalatest" % "2.2.5" % "test" intransitive()
   )
 
+  lazy val testingImplicits = Project("testingImplicits", file("testing/implicits"), settings = basicSettings) settings (
+    ScoverageKeys.coverageExcludedPackages := ".*",
+    libraryDependencies += "org.scalatest" %% "scalatest" % "2.2.5" % "test" intransitive()
+  )
+
   lazy val testingTiming = Project("testingTiming", file("testing/timing"), settings = basicSettings).settings(
     ScoverageKeys.coverageExcludedPackages := ".*"
   )

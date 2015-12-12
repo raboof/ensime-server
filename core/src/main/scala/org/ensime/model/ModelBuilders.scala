@@ -65,11 +65,14 @@ trait ModelBuilders { self: RichPresentationCompiler =>
         val name = symbolIndexerName(sym)
         val hit = search.findUnique(name)
         logger.debug(s"search: $name = $hit")
+        println(s"search: $name = $hit")
         hit.flatMap(LineSourcePositionHelper.fromFqnSymbol(_)(config, vfs)).flatMap { sourcePos =>
-          if (sourcePos.file.getName.endsWith(".scala"))
-            askLinkPos(sym, AbstractFile.getFile(sourcePos.file)).
-              flatMap(pos => OffsetSourcePositionHelper.fromPosition(pos))
-          else
+          if (sourcePos.file.getName.endsWith(".scala")) {
+            val f = AbstractFile.getFile(sourcePos.file)
+            // The following seems to have a side effect that causes trouble:
+            val p = askLinkPos(sym, f)
+            p.flatMap(pos => OffsetSourcePositionHelper.fromPosition(pos))
+          } else
             Some(sourcePos)
         }
       } else
@@ -284,6 +287,7 @@ trait ModelBuilders { self: RichPresentationCompiler =>
       new SymbolInfo(
         name,
         localName,
+        // This seems to have a side effect when we pass 'PosNeededYes'
         locateSymbolPos(sym, PosNeededYes),
         TypeInfo(tpe, PosNeededAvail),
         isArrowType(tpe),
