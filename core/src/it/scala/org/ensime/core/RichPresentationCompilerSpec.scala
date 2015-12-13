@@ -507,6 +507,10 @@ class RichPresentationCompilerSpec extends WordSpec with Matchers
       cc.askReloadFile(fileOnDisk)
       cc.askLoadedTyped(fileOnDisk)
 
+      // Initialize the search service
+      cc.search.refreshResolver()
+      Await.result(cc.search.refresh(), 180.seconds)
+
       // 'hover over seconds'
       val secondsSymbolPosition = new OffsetPosition(fileOnDisk, source.indexOf("onds"))
       val symbolInfo1 = cc.askSymbolInfoAt(secondsSymbolPosition).get
