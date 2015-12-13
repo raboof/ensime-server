@@ -249,9 +249,14 @@ trait RichCompilerControl extends CompilerControl with RefactoringControl with C
 
   def askLinkPos(sym: Symbol, path: AbstractFile): Option[Position] = {
     val fp = createSourceFile(path)
-    val lp = linkPos(sym, fp)
     // This seems to be the side effect:
+
+    // Skipping these 2 lines does affect the reproduction:
+    val lp = linkPos(sym, fp)
     askOption(lp)
+
+    // Ignoring the result of this function does not affect the reproduction:
+    // None
   }
 }
 
