@@ -19,7 +19,7 @@ class ImplicitsWildcardImports extends WordSpec with Matchers
   val original = EnsimeConfigFixture.ImplicitsTestProject
 
   "ensime-server" should {
-    "allow getting symbols also after marking implicits imported with a wildcard import" ignore {
+    "allow getting symbols also after marking implicits imported with a wildcard import" in {
       withEnsimeConfig { implicit config =>
         withTestKit { implicit testkit =>
           withProject { (project, asyncHelper) =>

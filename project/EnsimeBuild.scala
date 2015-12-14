@@ -23,7 +23,7 @@ object EnsimeBuild extends Build with JdkResolver {
   // common
   lazy val basicSettings = Seq(
     organization := "org.ensime",
-    scalaVersion := "2.11.7",
+    scalaVersion := "2.11.8-SNAPSHOT",
     version := "0.9.10-SNAPSHOT",
 
     // sbt, STFU...
@@ -45,7 +45,9 @@ object EnsimeBuild extends Build with JdkResolver {
       if (scalaVersion.value.startsWith("2.10."))
         Seq(compilerPlugin("org.scalamacros" % "paradise" % "2.0.1" cross CrossVersion.full))
       else Nil
-    }
+    },
+
+    resolvers += "sonatype snapshots" at "https://oss.sonatype.org/content/repositories/snapshots"
   )
   val isEmacs = sys.env.get("TERM") == Some("dumb")
 
