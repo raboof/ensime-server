@@ -52,7 +52,8 @@ object EnsimeConfigFixture {
     subprojects = EnsimeTestProject.subprojects.filter(_.name == "testingSimple")
   )
   lazy val ImplicitsTestProject: EnsimeConfig = EnsimeTestProject.copy(
-    subprojects = EnsimeTestProject.subprojects.filter(_.name == "testingImplicits")
+    subprojects = EnsimeTestProject.subprojects.filter(_.name == "testingImplicits"),
+    javaLibs = Nil
   )
   lazy val TimingTestProject: EnsimeConfig = EnsimeTestProject.copy(
     subprojects = EnsimeTestProject.subprojects.filter(_.name == "testingTiming"),
